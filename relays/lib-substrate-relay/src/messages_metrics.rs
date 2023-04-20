@@ -19,7 +19,6 @@
 use crate::TaggedAccount;
 
 use bp_messages::LaneId;
-use bp_relayers::{RewardsAccountOwner, RewardsAccountParams};
 use bp_runtime::StorageDoubleMapKeyProvider;
 use codec::Decode;
 use frame_system::AccountInfo;
@@ -83,29 +82,18 @@ where
 
 		if let Some(relayers_pallet_name) = BC::WITH_CHAIN_RELAYERS_PALLET_NAME {
 			for lane in lanes {
-				FloatStorageValueMetric::new(
+				let relay_account_reward_metric = FloatStorageValueMetric::new(
 					AccountBalance::<C> { token_decimals, _phantom: Default::default() },
 					client.clone(),
 					bp_relayers::RelayerRewardsKeyProvider::<AccountIdOf<C>, BalanceOf<C>>::final_key(
 						relayers_pallet_name,
 						account.id(),
-						&RewardsAccountParams::new(*lane, BC::ID, RewardsAccountOwner::ThisChain),
+						lane,
 					),
-					format!("at_{}_relay_{}_reward_for_msgs_from_{}_on_lane_{}", C::NAME, account.tag(), BC::NAME, hex::encode(lane.as_ref())),
-					format!("Reward of the {} relay account at {} for delivering messages from {} on lane {:?}", account.tag(), C::NAME, BC::NAME, lane),
-				)?.register_and_spawn(&metrics.registry)?;
-
-				FloatStorageValueMetric::new(
-					AccountBalance::<C> { token_decimals, _phantom: Default::default() },
-					client.clone(),
-					bp_relayers::RelayerRewardsKeyProvider::<AccountIdOf<C>, BalanceOf<C>>::final_key(
-						relayers_pallet_name,
-						account.id(),
-						&RewardsAccountParams::new(*lane, BC::ID, RewardsAccountOwner::BridgedChain),
-					),
-					format!("at_{}_relay_{}_reward_for_msgs_to_{}_on_lane_{}", C::NAME, account.tag(), BC::NAME, hex::encode(lane.as_ref())),
-					format!("Reward of the {} relay account at {} for delivering messages confirmations from {} on lane {:?}", account.tag(), C::NAME, BC::NAME, lane),
-				)?.register_and_spawn(&metrics.registry)?;
+					format!("at_{}_relay_{}_reward_for_lane_{}_with_{}", C::NAME, account.tag(), hex::encode(lane.as_ref()), BC::NAME),
+					format!("Reward of the {} relay account for serving lane {:?} with {} at the {}", account.tag(), lane, BC::NAME, C::NAME),
+				)?;
+				relay_account_reward_metric.register_and_spawn(&metrics.registry)?;
 			}
 		}
 	}

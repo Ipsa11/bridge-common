@@ -18,6 +18,7 @@
 
 use crate::cli::bridge::{CliBridgeBase, MessagesCliBridge, ParachainToRelayHeadersCliBridge};
 use bp_polkadot_core::parachains::{ParaHash, ParaHeadsProof, ParaId};
+use parachains_relay::ParachainsPipeline;
 use relay_substrate_client::{CallOf, HeaderIdOf};
 use substrate_relay_helper::parachains::{
 	SubmitParachainHeadsCallBuilder, SubstrateParachainsPipeline,
@@ -26,6 +27,11 @@ use substrate_relay_helper::parachains::{
 /// BridgeHub-to-BridgeHub parachain sync description.
 #[derive(Clone, Debug)]
 pub struct BridgeHubRococoToBridgeHubWococo;
+
+impl ParachainsPipeline for BridgeHubRococoToBridgeHubWococo {
+	type SourceChain = relay_rococo_client::Rococo;
+	type TargetChain = relay_bridge_hub_wococo_client::BridgeHubWococo;
+}
 
 impl SubstrateParachainsPipeline for BridgeHubRococoToBridgeHubWococo {
 	type SourceParachain = relay_bridge_hub_rococo_client::BridgeHubRococo;

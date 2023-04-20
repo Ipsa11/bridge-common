@@ -17,6 +17,7 @@
 //! Westend-to-Millau parachains sync entrypoint.
 
 use crate::cli::bridge::{CliBridgeBase, ParachainToRelayHeadersCliBridge};
+use parachains_relay::ParachainsPipeline;
 use relay_millau_client::Millau;
 use relay_westend_client::{Westend, Westmint};
 use substrate_relay_helper::parachains::{
@@ -26,6 +27,11 @@ use substrate_relay_helper::parachains::{
 /// Westend-to-Millau parachains sync description.
 #[derive(Clone, Debug)]
 pub struct WestendParachainsToMillau;
+
+impl ParachainsPipeline for WestendParachainsToMillau {
+	type SourceChain = Westend;
+	type TargetChain = Millau;
+}
 
 impl SubstrateParachainsPipeline for WestendParachainsToMillau {
 	type SourceParachain = Westmint;

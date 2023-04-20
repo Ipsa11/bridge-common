@@ -17,7 +17,6 @@
 //! Types used to connect to the Rialto-Substrate chain.
 
 use bp_messages::MessageNonce;
-use bp_runtime::ChainId;
 use codec::{Compact, Decode, Encode};
 use relay_substrate_client::{
 	BalanceOf, Chain, ChainWithBalances, ChainWithMessages, ChainWithTransactions,
@@ -40,7 +39,6 @@ impl UnderlyingChainProvider for Rialto {
 }
 
 impl Chain for Rialto {
-	const ID: ChainId = bp_runtime::RIALTO_CHAIN_ID;
 	const NAME: &'static str = "Rialto";
 	// Rialto token has no value, but we associate it with DOT token
 	const TOKEN_ID: Option<&'static str> = Some("polkadot");

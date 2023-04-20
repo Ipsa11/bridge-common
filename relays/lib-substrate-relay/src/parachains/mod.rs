@@ -56,8 +56,7 @@ pub struct ParachainsPipelineAdapter<P: SubstrateParachainsPipeline> {
 }
 
 impl<P: SubstrateParachainsPipeline> ParachainsPipeline for ParachainsPipelineAdapter<P> {
-	type SourceParachain = P::SourceParachain;
-	type SourceRelayChain = P::SourceRelayChain;
+	type SourceChain = P::SourceRelayChain;
 	type TargetChain = P::TargetChain;
 }
 

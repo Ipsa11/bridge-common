@@ -16,6 +16,7 @@
 
 use crate::cli::CliChain;
 use pallet_bridge_parachains::{RelayBlockHash, RelayBlockHasher, RelayBlockNumber};
+use parachains_relay::ParachainsPipeline;
 use relay_substrate_client::{Chain, ChainWithTransactions, Parachain, RelayChain};
 use strum::{EnumString, EnumVariantNames};
 use substrate_relay_helper::{
@@ -29,8 +30,8 @@ use substrate_relay_helper::{
 pub enum FullBridge {
 	MillauToRialto,
 	RialtoToMillau,
-	MillauToRialtoParachain,
-	RialtoParachainToMillau,
+	//MillauToRialtoParachain,
+	//RialtoParachainToMillau,
 	BridgeHubRococoToBridgeHubWococo,
 	BridgeHubWococoToBridgeHubRococo,
 }
@@ -41,8 +42,8 @@ impl FullBridge {
 		match self {
 			Self::MillauToRialto => MILLAU_TO_RIALTO_INDEX,
 			Self::RialtoToMillau => RIALTO_TO_MILLAU_INDEX,
-			Self::MillauToRialtoParachain => MILLAU_TO_RIALTO_PARACHAIN_INDEX,
-			Self::RialtoParachainToMillau => RIALTO_PARACHAIN_TO_MILLAU_INDEX,
+			// Self::MillauToRialtoParachain => MILLAU_TO_RIALTO_PARACHAIN_INDEX,
+			// Self::RialtoParachainToMillau => RIALTO_PARACHAIN_TO_MILLAU_INDEX,
 			Self::BridgeHubRococoToBridgeHubWococo | Self::BridgeHubWococoToBridgeHubRococo =>
 				unimplemented!("Relay doesn't support send-message subcommand on bridge hubs"),
 		}
@@ -86,10 +87,10 @@ where
 		+ RelayChain;
 	/// Finality proofs synchronization pipeline (source parachain -> target).
 	type ParachainFinality: SubstrateParachainsPipeline<
-		SourceRelayChain = Self::SourceRelay,
-		SourceParachain = Self::Source,
-		TargetChain = Self::Target,
-	>;
+			SourceRelayChain = Self::SourceRelay,
+			SourceParachain = Self::Source,
+			TargetChain = Self::Target,
+		> + ParachainsPipeline<SourceChain = Self::SourceRelay, TargetChain = Self::Target>;
 	/// Finality proofs synchronization pipeline (source relay chain -> target).
 	type RelayFinality: SubstrateFinalitySyncPipeline<
 		SourceChain = Self::SourceRelay,

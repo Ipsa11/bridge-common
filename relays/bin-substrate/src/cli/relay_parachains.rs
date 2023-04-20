@@ -15,21 +15,27 @@
 // along with Parity Bridges Common.  If not, see <http://www.gnu.org/licenses/>.
 
 use crate::chains::{
-	rialto_parachains_to_millau::RialtoParachainToMillauCliBridge,
+	//rialto_parachains_to_millau::RialtoParachainToMillauCliBridge,
 	rococo_parachains_to_bridge_hub_wococo::BridgeHubRococoToBridgeHubWococoCliBridge,
 	westend_parachains_to_millau::WestmintToMillauCliBridge,
 	wococo_parachains_to_bridge_hub_rococo::BridgeHubWococoToBridgeHubRococoCliBridge,
 };
 use async_std::sync::Mutex;
 use async_trait::async_trait;
-use parachains_relay::parachains_loop::{AvailableHeader, SourceClient, TargetClient};
-use relay_substrate_client::Parachain;
+use bp_polkadot_core::parachains::ParaId;
+use parachains_relay::parachains_loop::{
+	AvailableHeader, ParachainSyncParams, SourceClient, TargetClient,
+};
+use relay_substrate_client::{Parachain, ParachainBase};
 use relay_utils::metrics::{GlobalMetrics, StandaloneMetric};
 use std::sync::Arc;
 use structopt::StructOpt;
 use strum::{EnumString, EnumVariantNames, VariantNames};
 use substrate_relay_helper::{
-	parachains::{source::ParachainsSource, target::ParachainsTarget, ParachainsPipelineAdapter},
+	parachains::{
+		source::ParachainsSource, target::ParachainsTarget, ParachainsPipelineAdapter,
+		SubstrateParachainsPipeline,
+	},
 	TransactionParams,
 };
 
@@ -99,6 +105,13 @@ where
 		parachains_relay::parachains_loop::run(
 			source_client,
 			target_client,
+			ParachainSyncParams {
+				parachains: vec![
+					ParaId(<Self::ParachainFinality as SubstrateParachainsPipeline>::SourceParachain::PARACHAIN_ID)
+				],
+				stall_timeout: std::time::Duration::from_secs(60),
+				strategy: parachains_relay::parachains_loop::ParachainSyncStrategy::Any,
+			},
 			metrics_params,
 			futures::future::pending(),
 		)
@@ -107,7 +120,7 @@ where
 	}
 }
 
-impl ParachainsRelayer for RialtoParachainToMillauCliBridge {}
+//impl ParachainsRelayer for RialtoParachainToMillauCliBridge {}
 
 impl ParachainsRelayer for WestmintToMillauCliBridge {}
 
@@ -119,8 +132,10 @@ impl RelayParachains {
 	/// Run the command.
 	pub async fn run(self) -> anyhow::Result<()> {
 		match self.bridge {
-			RelayParachainsBridge::RialtoToMillau =>
-				RialtoParachainToMillauCliBridge::relay_headers(self),
+		//	RelayHeadersAndMessages::MillauRialtoParachain(_) => todo!(),
+
+		RelayParachainsBridge::RialtoToMillau => todo!(),
+			// 	RialtoParachainToMillauCliBridge::relay_headers(self),
 			RelayParachainsBridge::WestendToMillau =>
 				WestmintToMillauCliBridge::relay_headers(self),
 			RelayParachainsBridge::BridgeHubRococoToBridgeHubWococo =>

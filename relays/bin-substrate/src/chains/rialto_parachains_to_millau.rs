@@ -17,6 +17,7 @@
 //! Rialto-to-Millau parachains sync entrypoint.
 
 use crate::cli::bridge::{CliBridgeBase, MessagesCliBridge, ParachainToRelayHeadersCliBridge};
+use parachains_relay::ParachainsPipeline;
 use relay_millau_client::Millau;
 use relay_rialto_client::Rialto;
 use relay_rialto_parachain_client::RialtoParachain;
@@ -27,6 +28,11 @@ use substrate_relay_helper::parachains::{
 /// Rialto-to-Millau parachains sync description.
 #[derive(Clone, Debug)]
 pub struct RialtoParachainsToMillau;
+
+impl ParachainsPipeline for RialtoParachainsToMillau {
+	type SourceChain = Rialto;
+	type TargetChain = Millau;
+}
 
 impl SubstrateParachainsPipeline for RialtoParachainsToMillau {
 	type SourceParachain = RialtoParachain;
@@ -44,21 +50,21 @@ pub type RialtoParachainsToMillauSubmitParachainHeadsCallBuilder =
 		millau_runtime::WithRialtoParachainsInstance,
 	>;
 
-//// `RialtoParachain` to `Millau` bridge definition.
-pub struct RialtoParachainToMillauCliBridge {}
+// //// `RialtoParachain` to `Millau` bridge definition.
+// pub struct RialtoParachainToMillauCliBridge {}
 
-impl CliBridgeBase for RialtoParachainToMillauCliBridge {
-	type Source = RialtoParachain;
-	type Target = Millau;
-}
+// impl CliBridgeBase for RialtoParachainToMillauCliBridge {
+// 	type Source = RialtoParachain;
+// 	type Target = Millau;
+// }
 
-impl ParachainToRelayHeadersCliBridge for RialtoParachainToMillauCliBridge {
-	type SourceRelay = Rialto;
-	type ParachainFinality = RialtoParachainsToMillau;
-	type RelayFinality = crate::chains::rialto_headers_to_millau::RialtoFinalityToMillau;
-}
+// impl ParachainToRelayHeadersCliBridge for RialtoParachainToMillauCliBridge {
+// 	type SourceRelay = Rialto;
+// 	type ParachainFinality = RialtoParachainsToMillau;
+// 	type RelayFinality = crate::chains::rialto_headers_to_millau::RialtoFinalityToMillau;
+// }
 
-impl MessagesCliBridge for RialtoParachainToMillauCliBridge {
-	type MessagesLane =
-		crate::chains::rialto_parachain_messages_to_millau::RialtoParachainMessagesToMillau;
-}
+// impl MessagesCliBridge for RialtoParachainToMillauCliBridge {
+// 	type MessagesLane =
+// 		crate::chains::rialto_parachain_messages_to_millau::RialtoParachainMessagesToMillau;
+// }
